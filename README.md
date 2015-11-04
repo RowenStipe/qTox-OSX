@@ -1,6 +1,6 @@
 # qTox-OSX
-## Experimental Release Version
-Commit Version: https://github.com/tux3/qtox/commit/49aca4fcdc25ef2cd20bfe58e8e52af6381d7d71
+## (Not quite)Experimental Release Version
+Commit Version: https://github.com/tux3/qTox/commit/c568a4db051762c3ec084415194df9335b4b1d55
 
 # Install
 
