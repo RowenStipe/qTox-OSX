@@ -44,7 +44,7 @@ function update {
 		echo "The symlink /usr/local/lib/libsodium.dylib exists."
 		sleep 3
 		
-		./configure CC="gcc -arch i386" CXX="g++ -arch i386" CPP="gcc -E" CXXCPP="g++ -E"
+		./configure CC="gcc -arch ppc -arch i386" CXX="g++  -arch ppc -arch i386" CPP="gcc -E" CXXCPP="g++ -E" 
 		
 		make clean
 		make	
@@ -63,7 +63,8 @@ function update {
 	read -r -p "Did qTox update from git? [y/N] " response
 	if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
 		echo "Starting OSX bootstrap ..."
-		bash ./bootstrap-osx.sh
+		echo "Sudo required:"
+		sudo bash ./bootstrap-osx.sh
 	else
 	    echo "Moving on!"
 	fi
@@ -85,7 +86,7 @@ function deploy {
 	echo "------------------------------"
 	echo "starting deployment process ..."
 	cd $BUILD_DIR
-	if [ -l != $BUILD_DIR ]; then
+	if [ ! -d $BUILD_DIR ]; then
 		echo "Error: Build directory not detected, please run -ubd, or -b before deploying"
 		exit
 	fi
