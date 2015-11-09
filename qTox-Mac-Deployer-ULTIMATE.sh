@@ -55,6 +55,8 @@ function install {
 	fcho "Installing x-code Comand line tools ..."
 	xcode-select --install
 	
+	fcho "Starting git repo checks ..."
+	
 	cd $MAIN_DIR # just in case
 	if [ -e $TOX_DIR/.git/index] # Check if this exists
 		fcho "Toxcore git repo already inplace !"
@@ -76,11 +78,13 @@ function install {
 		fcho "Filter_Audio git repo already inplace !"
 		cd $FA_DIR
 		git pull
+		fcho "Please enter your password to install Filter_Audio:"
 		sudo make install
 	else
 		fcho "Cloning Filter_Audio git ... "
 		git clone https://github.com/irungentoo/filter_audio.git
 		cd $FA_DIR
+		fcho "Please enter your password to install Filter_Audio:"
 		sudo make install
 	fi
 	
@@ -97,7 +101,22 @@ function install {
 	# Now let's get Qt creator because: It helps trust me.
 	wget $QT_DL
 	fcho "Please enter your password to mount Qt Creator to install:"
-	sudo hdutil attach $QT_DMG.dmg
+	sudo hdiutil attach $QT_DMG.dmg
+	sudo cp /Volumes/$QT_DMG/$QT_DMG.app $MAIN_DIR/qt-opensource-mac-installer.app
+	sudo hdiutil detach /Volumes/$QT_DMG
+	
+	fcho "The following file: qt-opensource-mac-installer.app should now be located in your \$MAIN_DIR: ${MAIN_DIR}"
+	
+	read -r -p "Install Qt-Creator now? [Y/n] " response
+	if [[ $response =~ ^([nN]|[nN])$ ]]; then
+		echo "To finish install run: qt-opensource-mac-installer.app"
+		echo "Before attempting to fun any other functions in this script. "
+		exit
+	else
+	    open -W qt-opensource-mac-installer.app	
+	fi
+	
+	fcho "If all went well you should now have all the tools needed to compile qTox!"
 	
 }
 
