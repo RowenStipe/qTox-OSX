@@ -3,13 +3,14 @@
 # qTox OSX auto BASH builder script by RowenStipe
 # This uses the same process as doing it manually but with a few varients
 
-# Use:./qTox-Mac-Deployer-ULTIMATE.sh [Process] [OPTIONAL]
+# Use:./qTox-Mac-Deployer-ULTIMATE.sh [Processes/Install] [OPTIONAL]
 # Process: -u to update -b to build -d or -ubd to run all at once
-# optional -c value for cleanup
+# Install: use -i to start install functionality
 
-# Set your main Dir
+# Optional: -c value for cleanup
+
 MAIN_DIR="/Users/Rowen" # Your home DIR really (Most of this happens in it) {DONT USE: ~ }
-QT_DIR="${MAIN_DIR}/Qt" # Folder name of QT install
+QT_DIR="${MAIN_DIR}/Qt5.5.1" # Folder name of QT install
 VER="${QT_DIR}/5.5" # Potential future proffing for version testing
 QMAKE="${VER}/clang_64/bin/qmake" # Don't change
 MACDEPLOYQT="${VER}/clang_64/bin/macdeployqt" # Don't change
@@ -35,10 +36,33 @@ function fcho() {
 	printf "\n$fch\n" "$@"
 }
 
+# The following was addapted from: https://github.com/irungentoo/toxcore/blob/47cac28df4065c52fb54a732759d551d79e45af7/other/osx_build_script_toxcore.sh
+function build-toxcore {
+	echo "Starting Toxcore build and install"
+	cd $TOXCORE_DIR
+	echo "No working in: ${PWD}"
+	#If libsodium is built with macports, link it from /opt/local/ to /usr/local
+	if [ ! -e /usr/local/opt/libsodium/lib/libsodium.13.dylib ]; then
+	#Control will enter here if $DIRECTORY doesn't exist.
+	   	ln -s /usr/local/opt/libsodium/lib/libsodium.dylib /usr/local/lib/libsodium.dylib
+  	else
+		echo "The symlink /usr/local/lib/libsodium.dylib exists."
+	fi
+	sleep 3
+	
+	./configure CC="gcc -arch ppc -arch i386" CXX="g++  -arch ppc -arch i386" CPP="gcc -E" CXXCPP="g++ -E" 
+	
+	make clean
+	make	
+	echo "------------------------------"
+	echo "Sudo required, please enter your password:"
+	sudo make install
+}
+
 function install {
 	fcho "=============================="
 	fcho "This script will install the nessicarry applications and libraries needed to compile qTox properly."
-	fcho "Note that this is not a 100% automated install it just helps simplfiy the process for less experianced or lazy users."
+	fcho "Note that this is not a 100\% automated install it just helps simplfiy the process for less experianced or lazy users."
 	read -n1 -rsp $'Press any key to continue or Ctrl+C to exit...\n'
 	if [ -e /usr/local/bin/brew ]; then
 		fcho "Homebrew already installed!"
@@ -58,7 +82,7 @@ function install {
 	fcho "Starting git repo checks ..."
 	
 	cd $MAIN_DIR # just in case
-	if [ -e $TOX_DIR/.git/index] # Check if this exists
+	if [ -e $TOX_DIR/.git/index ]; then # Check if this exists
 		fcho "Toxcore git repo already inplace !"
 		cd $TOX_DIR
 		git pull
@@ -66,7 +90,7 @@ function install {
 		fcho "Cloning Toxcore git ... "
 		git clone https://github.com/irungentoo/toxcore.git
 	fi
-	if [ -e $QTOX_DIR/.git/index] # Check if this exists
+	if [ -e $QTOX_DIR/.git/index ]; then # Check if this exists
 		fcho "qTox git repo already inplace !"
 		cd $QTOX_DIR
 		git pull
@@ -74,7 +98,7 @@ function install {
 		fcho "Cloning qTox git ... "
 		git clone https://github.com/tux3/qTox.git
 	fi
-	if [ -e $FA_DIR/.git/index] # Check if this exists
+	if [ -e $FA_DIR/.git/index ]; then # Check if this exists
 		fcho "Filter_Audio git repo already inplace !"
 		cd $FA_DIR
 		git pull
@@ -88,24 +112,31 @@ function install {
 		sudo make install
 	fi
 	
-	cd $MAIN_DIR
-	fcho "Now working in ${PWD}"
-	fcho "Getting Qt Creator for Mac ..."
-	sleep 2
-	fcho "Go ..."
-	sleep 1
-	fcho "Go get a drink for this one ..."
-	sleep 1
-	fcho "It might take a while ..."
+	read -r -p "wget Qt Creator? [Y/n] " response
+	if [[ $response =~ ^([nN]|[nN])$ ]]; then
+		cd $MAIN_DIR
+		fcho "Now working in ${PWD}"
+		fcho "Getting Qt Creator for Mac ..."
+		sleep 2
+		fcho "Go ..."
+		sleep 1
+		fcho "Go get a drink for this one ..."
+		sleep 1
+		fcho "It might take a while ..."
 	
-	# Now let's get Qt creator because: It helps trust me.
-	wget $QT_DL
+		# Now let's get Qt creator because: It helps trust me.
+		wget $QT_DL
+	fi
+	
+	read -r -p "Unpackage Qt Creator? [Y/n] " response
+	if [[ $response =~ ^([nN]|[nN])$ ]]; then
 	fcho "Please enter your password to mount Qt Creator to install:"
 	sudo hdiutil attach $QT_DMG.dmg
-	sudo cp /Volumes/$QT_DMG/$QT_DMG.app $MAIN_DIR/qt-opensource-mac-installer.app
+	sudo cp -rf /Volumes/$QT_DMG/$QT_DMG.app $MAIN_DIR/qt-opensource-mac-installer.app
 	sudo hdiutil detach /Volumes/$QT_DMG
 	
 	fcho "The following file: qt-opensource-mac-installer.app should now be located in your \$MAIN_DIR: ${MAIN_DIR}"
+	fi
 	
 	read -r -p "Install Qt-Creator now? [Y/n] " response
 	if [[ $response =~ ^([nN]|[nN])$ ]]; then
@@ -118,6 +149,13 @@ function install {
 	
 	fcho "If all went well you should now have all the tools needed to compile qTox!"
 	
+	read -r -p "Would you like to install toxcore now? [y/N] " response
+	if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
+		build-toxcore	
+	else
+	    fcho "You can simply use the -u command and say [Yes/n] when prompted"
+	fi
+	
 }
 
 function update {
@@ -129,7 +167,6 @@ function update {
 	fcho "Now in ${PWD}"
 	fcho "Pulling ..."
 	git pull
-	# The following was addapted from: https://github.com/irungentoo/toxcore/blob/47cac28df4065c52fb54a732759d551d79e45af7/other/osx_build_script_toxcore.sh
 	read -r -p "Did Toxcore update from git? [y/N] " response
 	if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
 		build-toxcore	
