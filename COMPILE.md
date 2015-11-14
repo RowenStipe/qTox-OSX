@@ -1,5 +1,5 @@
 # How to build qTox on Mac for deployment (At least on 10.10 )
-- REQUIRED: Toxcore (Latest Homebrew), Qt 5.5, filter_audio (Latest Git), Xcode, git (Homebrew), ffmpeg (Homebrew), qrencode (Homebrew), ond (obviously) Homebrew
+- REQUIRED: Toxcore (Git), Qt 5.5, filter_audio (Latest Git), Xcode, git (Homebrew), ffmpeg (Homebrew), qrencode (Homebrew), ond (obviously) Homebrew
 
 - RECOMENDED: Github Dektop for Mac: https://mac.github.com
 
@@ -26,6 +26,8 @@ Check out `filter_audio` from https://github.com/irungentoo/filter_audio
 Install Qt Creator 5.5 for compiling: http://www.qt.io/download-open-source/
 
 ##### The following is needed in-order to compile and deploy qTox
+
+* 
 
 Check out the latest qTox version or using your own fork
 	# 1. In Terminal cd to your qTox git DIR

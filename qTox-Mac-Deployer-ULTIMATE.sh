@@ -4,10 +4,8 @@
 # This uses the same process as doing it manually but with a few varients
 
 # Use:./qTox-Mac-Deployer-ULTIMATE.sh [Processes/Install] [OPTIONAL]
-# Process: -u to update -b to build -d or -ubd to run all at once
+# Process: -u to update -b to build -d to make the aplication productionr eady or -ubd to run all at once
 # Install: use -i to start install functionality
-
-# Optional: -c value for cleanup
 
 MAIN_DIR="/Users/Rowen" # Your home DIR really (Most of this happens in it) {DONT USE: ~ }
 QT_DIR="${MAIN_DIR}/Qt5.5.1" # Folder name of QT install
@@ -32,8 +30,8 @@ QT_DMG="qt-opensource-mac-x64-clang-5.5.1"
 
 
 function fcho() {
-	local fch="$1"; shift
-	printf "\n$fch\n" "$@"
+	local msg="$1"; shift
+	printf "\n$msg\n" "$@"
 }
 
 # The following was addapted from: https://github.com/irungentoo/toxcore/blob/47cac28df4065c52fb54a732759d551d79e45af7/other/osx_build_script_toxcore.sh
@@ -50,7 +48,8 @@ function build-toxcore {
 	fi
 	sleep 3
 	
-	./configure CC="gcc -arch ppc -arch i386" CXX="g++  -arch ppc -arch i386" CPP="gcc -E" CXXCPP="g++ -E" 
+	autoreconf -i 
+	./configure 
 	
 	make clean
 	make	
@@ -193,6 +192,8 @@ function update {
 function build {
 	fcho "------------------------------"
 	fcho "Starting build process ..."
+	rm -r $BUILD_DIR
+	rm -r $DEPLOY_DIR
 	mkdir $BUILD_DIR
 	cd $BUILD_DIR
 	fcho "Now working in ${PWD}"
@@ -216,13 +217,6 @@ function deploy {
 	$MACDEPLOYQT qTox.app
 }
 
-function clean {
-	fcho "------------------------------"
-	fcho "Starting cleanup process ..."
-	rm -r $BUILD_DIR
-	fcho "Cleared out build files!"
-}
-
 if [ "$1" == "-i" ]; then
 	install
 fi
@@ -230,20 +224,19 @@ fi
 if [ "$1" == "-u" ]; then
 	update
 fi
+
 if [ "$1" == "-b" ]; then
 	build
 fi
+
 if [ "$1" == "-d" ]; then
 	deploy
 fi
+
 if [ "$1" == "-ubd" ]; then
 	update
 	build
 	deploy
-fi
-
-if [ "$2" == "-c" ]; then
-	clean
 fi
 
 fcho "Nothing else, goodbye!" 
