@@ -7,7 +7,7 @@
 # Process: -u to update -b to build -d to make the aplication productionr eady or -ubd to run all at once
 # Install: use -i to start install functionality
 
-MAIN_DIR="/Users/Rowen" # Your home DIR really (Most of this happens in it) {DONT USE: ~ }
+MAIN_DIR="/Users/${USER}" # Your home DIR really (Most of this happens in it) {DONT USE: ~ }
 QT_DIR="${MAIN_DIR}/Qt5.5.1" # Folder name of QT install
 VER="${QT_DIR}/5.5" # Potential future proffing for version testing
 QMAKE="${VER}/clang_64/bin/qmake" # Don't change
@@ -73,7 +73,7 @@ function install {
 	brew update
 	fcho "Getting home brew formulas (You may have them already) ..."
 	sleep 3
-	brew install git ffmpeg qrencode wget
+	brew install git ffmpeg qrencode wget libtool automake autoconf libsodium check
 	
 	fcho "Installing x-code Comand line tools ..."
 	xcode-select --install
