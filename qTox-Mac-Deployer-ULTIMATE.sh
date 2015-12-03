@@ -3,7 +3,7 @@
 # qTox OSX auto BASH builder script by RowenStipe
 # This uses the same process as doing it manually but with a few varients
 
-# Use:./qTox-Mac-Deployer-ULTIMATE.sh [Processes/Install] [OPTIONAL]
+# Use:./qTox-Mac-Deployer-ULTIMATE.sh [Processes/Install]
 # Process: -u to update -b to build -d to make the aplication productionr eady or -ubd to run all at once
 # Install: use -i to start install functionality
 
@@ -19,10 +19,11 @@ TOXCORE_DIR="${MAIN_DIR}/toxcore" # Change to Git location
 
 FA_DIR="${MAIN_DIR}/filter_audio"
 
-BUILD_DIR="${MAIN_DIR}/qTox-Mac-Deployment" # Change if needed
+BUILD_DIR="${MAIN_DIR}/qTox-Mac_Build" # Change if needed
 
-DEPLOY_DIR="${MAIN_DIR}/qTox-deployed"
+DEPLOY_DIR="${MAIN_DIR}/qTox-Mac_Deployed"
 
+#Install stuff for Qt
 DL_DIR="${MAIN_DIR}/Downloads"
 QT_DMG="${DL_DIR}/qt-opensource-mac"
 QT_DL="https://download.qt.io/official_releases/qt/5.5/5.5.1/qt-opensource-mac-x64-clang-5.5.1.dmg"
@@ -34,24 +35,27 @@ function fcho() {
 	printf "\n$msg\n" "$@"
 }
 
-# The following was addapted from: https://github.com/irungentoo/toxcore/blob/47cac28df4065c52fb54a732759d551d79e45af7/other/osx_build_script_toxcore.sh
 function build-toxcore {
 	echo "Starting Toxcore build and install"
 	cd $TOXCORE_DIR
-	echo "No working in: ${PWD}"
-	#If libsodium is built with macports, link it from /opt/local/ to /usr/local
-	if [ ! -e /usr/local/opt/libsodium/lib/libsodium.13.dylib ]; then
-	#Control will enter here if $DIRECTORY doesn't exist.
-	   	ln -s /usr/local/opt/libsodium/lib/libsodium.dylib /usr/local/lib/libsodium.dylib
+	echo "Now working in: ${PWD}"
+	
+	#Check if libsodium is correct version
+	if [ -e /usr/local/opt/libsodium/lib/libsodium.17.dylib ]; then
+	   	fcho " Beginnning Toxcore compile "
   	else
-		echo "The symlink /usr/local/lib/libsodium.dylib exists."
+		echo "Error: libsodium.17.dylib not found! Unable to build!"
+		echo "Please make sure your Homebrew packages are up to date before retrying."
+		exit 1
 	fi
 	sleep 3
 	
 	autoreconf -i 
-	./configure 
 	
-	make clean
+	#Make sure the correct version of libsodium is used
+	./configure --with-libsodium-headers=/usr/local/Cellar/libsodium/1.0.6/include/ --with-libsodium-libs=/usr/local/Cellar/libsodium/1.0.6/lib/
+	
+	sudo make clean
 	make	
 	echo "------------------------------"
 	echo "Sudo required, please enter your password:"
@@ -71,7 +75,7 @@ function install {
 	fi
 	fcho "Updating brew formulas ..."
 	brew update
-	fcho "Getting home brew formulas (You may have them already) ..."
+	fcho "Getting home brew formulas ..."
 	sleep 3
 	brew install git ffmpeg qrencode wget libtool automake autoconf libsodium check
 	
@@ -141,7 +145,7 @@ function install {
 	if [[ $response =~ ^([nN]|[nN])$ ]]; then
 		echo "To finish install run: qt-opensource-mac-installer.app"
 		echo "Before attempting to fun any other functions in this script. "
-		exit
+		exit 3
 	else
 	    open -W qt-opensource-mac-installer.app	
 	fi
@@ -154,13 +158,11 @@ function install {
 	else
 	    fcho "You can simply use the -u command and say [Yes/n] when prompted"
 	fi
-	
 }
 
 function update {
 	fcho "------------------------------"
-	fcho "Starting update process ..."
-	
+	fcho "Starting update process ..."	
 	#First update Toxcore from git
 	cd $TOXCORE_DIR
 	fcho "Now in ${PWD}"
@@ -186,7 +188,6 @@ function update {
 	else
 	    fcho "Moving on!"
 	fi
-	
 }
 
 function build {
@@ -208,7 +209,7 @@ function deploy {
 	cd $BUILD_DIR
 	if [ ! -d $BUILD_DIR ]; then
 		fcho "Error: Build directory not detected, please run -ubd, or -b before deploying"
-		exit
+		exit 0
 	fi
 	mkdir $DEPLOY_DIR
 	cp -r $BUILD_DIR/qTox.app $DEPLOY_DIR/qTox.app
@@ -217,27 +218,47 @@ function deploy {
 	$MACDEPLOYQT qTox.app
 }
 
+# The commands
 if [ "$1" == "-i" ]; then
 	install
+	exit 0
 fi
 	
 if [ "$1" == "-u" ]; then
 	update
+	exit 0
 fi
 
 if [ "$1" == "-b" ]; then
 	build
+	exit 0
 fi
 
 if [ "$1" == "-d" ]; then
 	deploy
+	exit 0
 fi
 
 if [ "$1" == "-ubd" ]; then
 	update
 	build
 	deploy
+	exit 0
 fi
 
-fcho "Nothing else, goodbye!" 
-exit
+if [ "$1" == "-h" ]; then
+	echo "This script was created to help ease the process of compiling and creating a distribuable qTox package for OSX systems."
+	echo "The avilable commands are:"
+	echo "-h -- This help text."
+	echo "-i -- A slightly automated process for getting an OSX machine ready to build Toxcore and qTox."
+	echo "-u -- Check for updates and build Toxcore from git & update qTox from git."
+	echo "-b -- Builds qTox in: ${BUILD_DIR}"
+	echo "-d -- Makes a distributeable qTox.app file in: ${DEPLOY_DIR}"
+	echo "-ubd -- Does -u, -b, and -d sequentially"
+	fcho "If you have anny issues with this script please report it to: https://github.com/RowenStipe/qTox-OSX/issues "
+	fcho "Issues with Toxcore or qTox should be reported to their respective repos: https://github.com/irungentoo/toxcore | https://github.com/tux3/qTox"
+	exit 0
+fi
+
+fcho "Oh dear! You seemed to of started this script improperly! Use -h to get avilable commands and information!" 
+exit 0
