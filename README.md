@@ -1,6 +1,6 @@
 # qTox-OSX
-## (Not quite)Experimental Release Version
-Commit Version: https://github.com/tux3/qTox/commit/4d54f5cd1b19056acf972f4845ae192eeee12f4d
+## The Stable Not-Quite-Official-Yet Release
+Commit Version: https://github.com/tux3/qTox/commit/634ca9d70db58a37e7735b0df6f32e7551192a35
 
 # Install
 
@@ -14,4 +14,5 @@ As of this writing the version provided is a self compiled and self packaged as 
 
 This project is ment to provide a useable qTox applicationn on OSX, automation of the build process is being worked on and this project will eventually stop once that can be done.
 
-Updates are done within 4 days of the latest qTox repo commit. Or at least as much as I can keep up with it.
+#Updating
+Updates will be based around the stability of the client and less emphasis on getting updates out soon after qTox's git repo get's an update. 

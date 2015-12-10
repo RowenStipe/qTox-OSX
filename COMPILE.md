@@ -62,7 +62,8 @@ WARNING: Plugin "libqsqlodbc.dylib" uses private API and is not Mac App store co
 WARNING: Plugin "libqsqlpsql.dylib" uses private API and is not Mac App store compliant.
 ERROR: no file at "/opt/local/lib/mysql55/mysql/libmysqlclient.18.dylib"
 ERROR: no file at "/usr/local/lib/libpq.5.dylib"
-``` 
+```
+
 * This doesn't effect the `qTox.app` file that is created
 
 It is possible that some libraries might be missing from `/usr/local/lib/` or equivalent than those shown above, if so they need to be tracked down and added where the macdeployqt thinks they should be located. (Messy wording I know but I don’t have the list of libraries I needed when I got this running the first time.)
