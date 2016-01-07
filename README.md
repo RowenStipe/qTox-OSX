@@ -1,6 +1,6 @@
 # qTox-OSX
-## The Stable Not-Quite-Official-Yet Release
-Commit Version: https://github.com/tux3/qTox/commit/634ca9d70db58a37e7735b0df6f32e7551192a35
+## The Finally-We-Have-Video Release
+https://github.com/tux3/qTox/commit/ad3326b95d0b2f2a801cfc1068cd8d2f3f2c01f1
 
 # Install
 
