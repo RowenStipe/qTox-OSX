@@ -1,6 +1,6 @@
 # qTox-OSX
-## The Finally-We-Have-Video Release
-https://github.com/tux3/qTox/commit/ad3326b95d0b2f2a801cfc1068cd8d2f3f2c01f1
+## The A\V-Patch-Versioning-Auto-Start Release
+https://github.com/tux3/qTox/commit/26e7bde991a5dba14d9ab5e3215187f98372f5d1
 
 # Install
 
