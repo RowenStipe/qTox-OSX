@@ -7,8 +7,13 @@
 # Process: -u to update -b to build -d to make the aplication productionr eady or -ubd to run all at once
 # Install: use -i to start install functionality
 
-MAIN_DIR="/Users/${USER}" # Your home DIR really (Most of this happens in it) {DONT USE: ~ }
-QT_DIR="${MAIN_DIR}/Qt5.5.1" # Folder name of QT install
+# Your home DIR really (Most of this happens in it) {DONT USE: ~ }
+if [ $TRAVIS == true ]; then #travis check
+	MAIN_DIR="/Users/${USER}/${TRAVIS_BUILD_DIR}"
+else
+	MAIN_DIR="/Users/${USER}"
+fi
+QT_DIR="/usr/local/Cellar/Qt5.5.1_2" # Folder name of QT install
 VER="${QT_DIR}/5.5" # Potential future proffing for version testing
 QMAKE="${VER}/clang_64/bin/qmake" # Don't change
 MACDEPLOYQT="${VER}/clang_64/bin/macdeployqt" # Don't change
@@ -22,12 +27,6 @@ FA_DIR="${MAIN_DIR}/filter_audio"
 BUILD_DIR="${MAIN_DIR}/qTox-Mac_Build" # Change if needed
 
 DEPLOY_DIR="${MAIN_DIR}/qTox-Mac_Deployed"
-
-#Install stuff for Qt
-DL_DIR="${MAIN_DIR}/Downloads"
-QT_DMG="${DL_DIR}/qt-opensource-mac"
-QT_DL="https://download.qt.io/official_releases/qt/5.5/5.5.1/qt-opensource-mac-x64-clang-5.5.1.dmg"
-QT_DMG="qt-opensource-mac-x64-clang-5.5.1"
 
 
 function fcho() {
@@ -77,7 +76,7 @@ function install {
 	brew update
 	fcho "Getting home brew formulas ..."
 	sleep 3
-	brew install git ffmpeg qrencode wget libtool automake autoconf libsodium check
+	brew install git ffmpeg qrencode wget libtool automake autoconf libsodium check qt5
 	
 	fcho "Installing x-code Comand line tools ..."
 	xcode-select --install
@@ -114,49 +113,16 @@ function install {
 		fcho "Please enter your password to install Filter_Audio:"
 		sudo make install
 	fi
-	
-	read -r -p "wget Qt Creator? [Y/n] " response
-	if [[ $response =~ ^([nN]|[nN])$ ]]; then
-		cd $MAIN_DIR
-		fcho "Now working in ${PWD}"
-		fcho "Getting Qt Creator for Mac ..."
-		sleep 2
-		fcho "Go ..."
-		sleep 1
-		fcho "Go get a drink for this one ..."
-		sleep 1
-		fcho "It might take a while ..."
-	
-		# Now let's get Qt creator because: It helps trust me.
-		wget $QT_DL
-	fi
-	
-	read -r -p "Unpackage Qt Creator? [Y/n] " response
-	if [[ $response =~ ^([nN]|[nN])$ ]]; then
-	fcho "Please enter your password to mount Qt Creator to install:"
-	sudo hdiutil attach $QT_DMG.dmg
-	sudo cp -rf /Volumes/$QT_DMG/$QT_DMG.app $MAIN_DIR/qt-opensource-mac-installer.app
-	sudo hdiutil detach /Volumes/$QT_DMG
-	
-	fcho "The following file: qt-opensource-mac-installer.app should now be located in your \$MAIN_DIR: ${MAIN_DIR}"
-	fi
-	
-	read -r -p "Install Qt-Creator now? [Y/n] " response
-	if [[ $response =~ ^([nN]|[nN])$ ]]; then
-		echo "To finish install run: qt-opensource-mac-installer.app"
-		echo "Before attempting to fun any other functions in this script. "
-		exit 3
+	if [ $TRAVIS == true ]; then #travis check
+		build-toxcore
 	else
-	    open -W qt-opensource-mac-installer.app	
-	fi
-	
-	fcho "If all went well you should now have all the tools needed to compile qTox!"
-	
-	read -r -p "Would you like to install toxcore now? [y/N] " response
-	if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
-		build-toxcore	
-	else
-	    fcho "You can simply use the -u command and say [Yes/n] when prompted"
+		fcho "If all went well you should now have all the tools needed to compile qTox!"
+		read -r -p "Would you like to install toxcore now? [y/N] " response
+		if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
+			build-toxcore	
+		else
+		    fcho "You can simply use the -u command and say [Yes/n] when prompted"
+		fi
 	fi
 }
 
