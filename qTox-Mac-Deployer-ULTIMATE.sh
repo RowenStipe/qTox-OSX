@@ -8,7 +8,7 @@
 # Install: use -i to start install functionality
 
 # Your home DIR really (Most of this happens in it) {DONT USE: ~ }
-if [ $TRAVIS == true ]; then #travis check
+if [[ $TRAVIS = true ]]; then #travis check
 	MAIN_DIR="/Users/${USER}/${TRAVIS_BUILD_DIR}"
 else
 	MAIN_DIR="/Users/${USER}"
@@ -64,8 +64,13 @@ function build-toxcore {
 function install {
 	fcho "=============================="
 	fcho "This script will install the nessicarry applications and libraries needed to compile qTox properly."
-	fcho "Note that this is not a 100\% automated install it just helps simplfiy the process for less experianced or lazy users."
+	fcho "Note that this is not a 100 percent automated install it just helps simplfiy the process for less experianced or lazy users."
+	if [[ $TRAVIS = true ]]; then #travis check
+		echo "Oh... It's just Travis...."
+	else
 	read -n1 -rsp $'Press any key to continue or Ctrl+C to exit...\n'
+	fi
+		
 	if [ -e /usr/local/bin/brew ]; then
 		fcho "Homebrew already installed!"
 	else
@@ -113,7 +118,7 @@ function install {
 		fcho "Please enter your password to install Filter_Audio:"
 		sudo make install
 	fi
-	if [ $TRAVIS == true ]; then #travis check
+	if [[ $TRAVIS = true ]]; then #travis check
 		build-toxcore
 	else
 		fcho "If all went well you should now have all the tools needed to compile qTox!"
