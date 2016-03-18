@@ -1,6 +1,6 @@
 # qTox-OSX
-## The A\V-Patch-Versioning-Auto-Start Release
-https://github.com/tux3/qTox/commit/26e7bde991a5dba14d9ab5e3215187f98372f5d1
+## The Ohh-This-Update-System-Is-Still-A-Thing Release
+https://github.com/tux3/qTox/commit/a48c4225938834db0d4406cff54a07378e9636f4
 
 # Install
 

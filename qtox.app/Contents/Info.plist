@@ -65,7 +65,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>v1.2-307-g26e7bde</string>
+	<string>v1.3.0-38-ga48c422</string>
 	<key>CFBundleSignature</key>
 	<string>toxq</string>
 	<key>CFBundleURLTypes</key>
